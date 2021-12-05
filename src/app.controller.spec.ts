@@ -1,3 +1,4 @@
+import { MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,6 +8,7 @@ describe('AppController', () => {
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
+      imports: [MongooseModule.forRoot(process.env.MONGO_URI)],
       controllers: [AppController],
       providers: [AppService],
     }).compile();

@@ -46,4 +46,8 @@ export class CardService {
     this.cardList.splice(idx, 1);
     return await id;
   }
+
+  async deleteAll() {
+    this.cardList.splice(0, this.cardList.length);
+  }
 }
