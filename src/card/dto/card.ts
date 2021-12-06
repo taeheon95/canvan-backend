@@ -1,12 +1,12 @@
-class Card {
-  private _id: number;
+export class CardDto {
+  private _id: string;
   private _seq: number;
   private _name: string;
   private _insertTime: number;
   private _updateTime: number;
-  private _list_id: number;
+  private _list_id: string;
 
-  constructor(id: number, seq: number, name: string, list_id: number) {
+  constructor(id: string, seq: number, name: string, list_id: string) {
     this._id = id;
     this._seq = seq;
     this._name = name;
@@ -39,10 +39,10 @@ class Card {
   public set updateTime(value: number) {
     this._updateTime = value;
   }
-  public get list_id(): number {
+  public get list_id(): string {
     return this._list_id;
   }
-  public set list_id(value: number) {
+  public set list_id(value: string) {
     this._list_id = value;
   }
 }
@@ -50,13 +50,11 @@ class Card {
 export class CreateCardDto {
   seq: number;
   name: string;
-  list_id: number;
+  list_id: string;
 }
 
 export class UpdateCardDto {
   seq?: number;
   name?: string;
-  list_id?: number;
+  list_id?: string;
 }
-
-export default Card;

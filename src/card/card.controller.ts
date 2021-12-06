@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -21,7 +20,7 @@ export class CardController {
   }
 
   @Get(':id')
-  async getById(@Param('id', ParseIntPipe) id: number) {
+  async getById(@Param('id') id: string) {
     return await this.cardService.findById(id);
   }
 
@@ -31,15 +30,12 @@ export class CardController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() card: UpdateCardDto,
-  ) {
+  async update(@Param('id') id: string, @Body() card: UpdateCardDto) {
     return await this.cardService.update(id, card);
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  async delete(@Param('id') id: string) {
     return await this.cardService.delete(id);
   }
 }

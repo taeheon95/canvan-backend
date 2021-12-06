@@ -1,53 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import Card, { CreateCardDto, UpdateCardDto } from './dto/card';
+import { InjectModel } from '@nestjs/mongoose';
+import { CreateCardDto, UpdateCardDto } from './dto/card';
+import { Card, CardDocument } from './schema/Card.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class CardService {
-  private readonly cardList: Card[];
-  private id: number;
-
-  constructor() {
-    this.cardList = [];
-    this.id = 0;
-  }
+  constructor(@InjectModel(Card.name) private cardModel: Model<CardDocument>) {}
 
   async findAll() {
-    return await this.cardList;
+    return await this.cardModel.find();
   }
 
-  async findById(id: number) {
-    return await this.cardList.find((list) => list.id === id);
+  async findById(id: string) {
+    return await this.cardModel.findById(id);
   }
 
   async create(card: CreateCardDto) {
-    const newCard: Card = new Card(
-      this.id++,
-      card.seq,
-      card.name,
-      card.list_id,
-    );
-    this.cardList.push(newCard);
-    return await newCard;
+    const createdCard = new this.cardModel(card);
+    return await createdCard.save();
   }
 
-  async update(id: number, updateCard: UpdateCardDto) {
-    const { seq, name, list_id } = updateCard;
-    const updateTime = new Date().getTime();
-    const card = this.cardList.find((card) => card.id === id);
-    card.seq = seq ? seq : card.seq;
-    card.name = name ? name : card.name;
-    card.list_id = list_id ? list_id : card.list_id;
-    card.updateTime = updateTime;
-    return await card;
+  async update(id: string, updateCard: UpdateCardDto) {
+    return await this.cardModel.findByIdAndUpdate(id, { ...updateCard });
   }
 
-  async delete(id: number) {
-    const idx = this.cardList.findIndex((card) => card.id === id);
-    this.cardList.splice(idx, 1);
-    return await id;
-  }
-
-  async deleteAll() {
-    this.cardList.splice(0, this.cardList.length);
+  async delete(id: string) {
+    return await this.cardModel.findByIdAndDelete(id);
   }
 }
