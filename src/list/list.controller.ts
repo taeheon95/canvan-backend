@@ -19,7 +19,7 @@ export class ListController {
     return await this.listService.findAll();
   }
   @Get(':id')
-  async getById(@Param('id', ParseIntPipe) id: number) {
+  async getById(@Param('id') id: string) {
     return await this.listService.findById(id);
   }
   @Post()
@@ -27,14 +27,11 @@ export class ListController {
     return await this.listService.create(list);
   }
   @Put(':id')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() list: UpdateListDto,
-  ) {
+  async update(@Param('id') id: string, @Body() list: UpdateListDto) {
     return await this.listService.update(id, list);
   }
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  async delete(@Param('id') id: string) {
     return await this.listService.delete(id);
   }
 }
