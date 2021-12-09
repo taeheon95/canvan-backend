@@ -1,31 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { CreateCardDto, UpdateCardDto } from './dto/card';
-import { Card, CardDocument } from './schema/Card.schema';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CardDto } from './dto/card';
+import { DeleteResult, Repository } from 'typeorm';
+import { Card } from './card.entity';
 
 @Injectable()
 export class CardService {
-  constructor(@InjectModel(Card.name) private cardModel: Model<CardDocument>) {}
+  constructor(
+    @InjectRepository(Card)
+    private cardRepository: Repository<Card>,
+  ) {}
 
-  async findAll() {
-    return await this.cardModel.find();
+  async findAll(): Promise<Card[]> {
+    return await this.cardRepository.find();
   }
 
-  async findById(id: string) {
-    return await this.cardModel.findById(id);
+  async findById(id: number): Promise<Card> {
+    return await this.cardRepository.findOne(id);
   }
 
-  async create(card: CreateCardDto) {
-    const createdCard = new this.cardModel(card);
-    return await createdCard.save();
+  async create(card: CardDto): Promise<Card> {
+    const createTime = String(Date.now());
+    const newCard = await this.cardRepository.create({
+      seq: card.seq,
+      title: card.title,
+      insert_time: createTime,
+      update_time: createTime,
+      list: { id: card.listId },
+    });
+    return await this.cardRepository.save(newCard);
   }
 
-  async update(id: string, updateCard: UpdateCardDto) {
-    return await this.cardModel.findByIdAndUpdate(id, { ...updateCard });
+  async update(id: number, updateCard: Partial<CardDto>): Promise<Card> {
+    const card = await this.cardRepository.findOne(id);
+    const { title, seq, listId } = updateCard;
+    card.title = title ? title : card.title;
+    card.seq = seq ? seq : card.seq;
+    card.list.id = listId ? listId : card.list.id;
+    card.update_time = String(Date.now());
+    return await this.cardRepository.save(card);
   }
 
-  async delete(id: string) {
-    return await this.cardModel.findByIdAndDelete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    const card = await this.cardRepository.findOne(id);
+    return await this.cardRepository.delete(card);
+  }
+  async deleteMany(listId: number): Promise<DeleteResult> {
+    return await this.cardRepository.delete({
+      list: { id: listId },
+    });
   }
 }
