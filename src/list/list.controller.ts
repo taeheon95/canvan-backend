@@ -8,7 +8,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { CreateListDto, UpdateListDto } from './dto/list';
+import { ListDto } from './dto/list';
 import { ListService } from './list.service';
 
 @Controller('list')
@@ -19,19 +19,22 @@ export class ListController {
     return await this.listService.findAll();
   }
   @Get(':id')
-  async getById(@Param('id') id: string) {
+  async getById(@Param('id', ParseIntPipe) id: number) {
     return await this.listService.findById(id);
   }
   @Post()
-  async create(@Body() list: CreateListDto) {
+  async create(@Body() list: ListDto) {
     return await this.listService.create(list);
   }
   @Put(':id')
-  async update(@Param('id') id: string, @Body() list: UpdateListDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() list: Partial<ListDto>,
+  ) {
     return await this.listService.update(id, list);
   }
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.listService.delete(id);
   }
 }

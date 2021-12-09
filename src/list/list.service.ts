@@ -1,34 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateListDto, UpdateListDto } from './dto/list';
-import { List, ListDocument } from './schema/List.schema';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository } from 'typeorm';
+import { ListDto } from './dto/list';
+import { List } from './List.entity';
 
 @Injectable()
 export class ListService {
-  constructor(@InjectModel(List.name) private listModel: Model<ListDocument>) {}
+  constructor(
+    @InjectRepository(List)
+    private listRepository: Repository<List>,
+  ) {}
 
-  async findAll() {
-    return await this.listModel.find();
+  async findAll(): Promise<List[]> {
+    return await this.listRepository.find();
   }
 
-  async findById(id: string) {
-    return await this.listModel.findById(id);
-  }
-
-  async create(list: CreateListDto) {
-    const createdList = new this.listModel(list);
-    return await createdList.save();
-  }
-
-  async update(id: string, updateList: UpdateListDto) {
-    return await this.listModel.findByIdAndUpdate(id, {
-      ...updateList,
-      update_time: Date.now(),
+  async findById(id: number): Promise<List> {
+    return await this.listRepository.findOne(id, {
+      relations: ['cardList'],
     });
   }
 
-  async delete(id: string) {
-    return await this.listModel.findByIdAndDelete(id);
+  async create(list: ListDto): Promise<List> {
+    const createTime = String(Date.now());
+    return await this.listRepository.save({
+      seq: list.seq,
+      title: list.title,
+      insert_time: createTime,
+      update_time: createTime,
+      cardList: [],
+    });
+  }
+
+  async update(id: number, updateList: Partial<ListDto>): Promise<List> {
+    const list = await this.listRepository.findOne(id);
+    const { seq, title } = updateList;
+    list.seq = seq ? seq : list.seq;
+    list.title = title ? title : list.title;
+    list.update_time = String(Date.now());
+    return await this.listRepository.save(list);
+  }
+
+  async delete(id: number): Promise<DeleteResult> {
+    const list = await this.listRepository.findOne(id);
+    return await this.listRepository.delete(list);
   }
 }

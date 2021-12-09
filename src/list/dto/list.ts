@@ -1,58 +1,23 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
+import { Card } from 'src/card/card.entity';
 
-class List {
-  private _id: number;
-  private _seq: number;
-  private _name: string;
-  private _insertTime: number;
-  private _updateTime: number;
-
-  constructor(id: number, seq: number, name: string) {
-    this._id = id;
-    this._seq = seq;
-    this._name = name;
-    this._insertTime = new Date().getTime();
-    this._updateTime = new Date().getTime();
-  }
-
-  public get id() {
-    return this._id;
-  }
-  public get seq(): number {
-    return this._seq;
-  }
-  public set seq(value: number) {
-    this._seq = value;
-  }
-  public get name(): string {
-    return this._name;
-  }
-  public set name(value: string) {
-    this._name = value;
-  }
-  public get insertTime(): number {
-    return this._insertTime;
-  }
-  public get updateTime(): number {
-    return this._updateTime;
-  }
-  public set updateTime(value: number) {
-    this._updateTime = value;
-  }
-}
-
-export class CreateListDto {
+export class ListDto {
   @IsNumber()
   seq: number;
+
   @IsString()
-  name: string;
+  title: string;
+
+  @IsArray()
+  cardList: Card[];
 }
 
-export class UpdateListDto {
-  @IsNumber()
-  seq?: number;
-  @IsString()
-  name?: string;
+class List {
+  id: string;
+  seq: number;
+  name: string;
+  insertTime: number;
+  updateTime: number;
 }
 
 export default List;
