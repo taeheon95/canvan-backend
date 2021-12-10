@@ -12,7 +12,9 @@ export class ListService {
   ) {}
 
   async findAll(): Promise<List[]> {
-    return await this.listRepository.find();
+    return await this.listRepository.find({
+      relations: ['cardList'],
+    });
   }
 
   async findById(id: number): Promise<List> {
