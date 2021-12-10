@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, MoreThanOrEqual, Repository } from 'typeorm';
 import { ListDto } from './dto/list';
 import { List } from './List.entity';
 
@@ -34,13 +34,8 @@ export class ListService {
     });
   }
 
-  async update(id: number, updateList: Partial<ListDto>): Promise<List> {
-    const list = await this.listRepository.findOne(id);
-    const { seq, title } = updateList;
-    list.seq = seq ? seq : list.seq;
-    list.title = title ? title : list.title;
-    list.update_time = String(Date.now());
-    return await this.listRepository.save(list);
+  async update(listArray: Partial<List[]>): Promise<List[]> {
+    return await this.listRepository.save(listArray);
   }
 
   async delete(id: number): Promise<DeleteResult> {

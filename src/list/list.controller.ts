@@ -9,6 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ListDto } from './dto/list';
+import { List } from './list.entity';
 import { ListService } from './list.service';
 
 @Controller('list')
@@ -26,15 +27,11 @@ export class ListController {
   async create(@Body() list: ListDto) {
     return await this.listService.create(list);
   }
-  @Put(':id')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() list: Partial<ListDto>,
-  ) {
-    return await this.listService.update(id, list);
+  @Put()
+  async update(@Body() listArray: Partial<List[]>) {
+    return await this.listService.update(listArray);
   }
-  @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  @Delete(':id') async delete(@Param('id', ParseIntPipe) id: number) {
     return await this.listService.delete(id);
   }
 }

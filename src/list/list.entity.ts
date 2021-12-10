@@ -1,5 +1,12 @@
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Board } from '../board/board.entity';
 import { Card } from '../card/card.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class List {
@@ -20,4 +27,7 @@ export class List {
 
   @OneToMany(() => Card, (card) => card.list)
   cardList: Card[];
+
+  @ManyToOne(() => Board, (board) => board.listList, { onDelete: 'CASCADE' })
+  board: Board;
 }
